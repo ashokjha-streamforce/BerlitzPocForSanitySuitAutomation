@@ -1,19 +1,7 @@
-package poc.login;
-
-import com.microsoft.playwright.junit.UsePlaywright;
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Browser.NewContextOptions;
-import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.Video;
-import com.microsoft.playwright.BrowserType.LaunchOptions;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.options.*;
-
-import poc.prop.IProperty;
-import poc.prop.PropertyReader;
-import poc.prop.VideoUtil;
+/**
+ * 
+ */
+package poc.calender;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -25,9 +13,28 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Video;
+import com.microsoft.playwright.Browser.NewContextOptions;
+import com.microsoft.playwright.BrowserType.LaunchOptions;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.junit.UsePlaywright;
+import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.RecordVideoSize;
+import com.microsoft.playwright.options.WaitForSelectorState;
+
+import poc.prop.IProperty;
+import poc.prop.PropertyReader;
+import poc.prop.VideoUtil;
+
+/**
+ * 
+ */
 @UsePlaywright
-public class BerlitzLogin {
-	// Shared between all tests in this class.
+public class StudentCalender {
 	static Playwright playwright;
 	static Browser browser;
 
@@ -60,8 +67,7 @@ public class BerlitzLogin {
 	}
 
 	@Test
-	public void testLogin() {
-
+	public void testCalender() {
 		page.navigate(PropertyReader.getProperty(IProperty.PORTAL_URL));
 		Locator userNameEmail = page.getByRole(AriaRole.TEXTBOX,
 				new Page.GetByRoleOptions().setName(PropertyReader.getProperty(IProperty.USER_NAME_OR_EMAIL)));
@@ -87,30 +93,37 @@ public class BerlitzLogin {
 		assertThat(login).isVisible();
 		login.click();
 
+		page.locator("a").filter(new Locator.FilterOptions().setHasText("Admin")).click();
+		Locator loginAsUser = page.getByRole(AriaRole.BUTTON,
+				new Page.GetByRoleOptions().setName(PropertyReader.getProperty(IProperty.LOGIN_AS_USER)));
+		loginAsUser.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+		
+		loginAsUser.click();
+		page.getByRole(AriaRole.TEXTBOX).click();
+		page.getByRole(AriaRole.TEXTBOX).fill("a1H3W00000037cMUAQ");
+		page.locator("label svg").check();
+		page.getByRole(AriaRole.TEXTBOX).click();
+		page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("isStudent?")).check();
+		
+		loginAsUser = page.getByRole(AriaRole.BUTTON,
+				new Page.GetByRoleOptions().setName(PropertyReader.getProperty(IProperty.LOGIN_AS_USER)));
+		//page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName(IProperty.LOGIN_AS_USER)).click();
+		loginAsUser.click();
+		page.locator("a").filter(new Locator.FilterOptions().setHasText("Calendar")).click();
+		page.getByText("My calendar").click();
+		
 		Locator signOutPath = page.locator(PropertyReader.getProperty(IProperty.PATH)).nth(1);
 		signOutPath.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
 		assertThat(signOutPath).isVisible();
 		signOutPath.click();
-
 		Locator signOutLink = page.getByRole(AriaRole.LINK,
 				new Page.GetByRoleOptions().setName(PropertyReader.getProperty(IProperty.SIGN_OUT)));
 		assertThat(signOutLink).isVisible();
 		signOutLink.click();
-
-		userNameEmail = page.getByRole(AriaRole.TEXTBOX,
-				new Page.GetByRoleOptions().setName(PropertyReader.getProperty(IProperty.USER_NAME_OR_EMAIL)));
-		userNameEmail.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-		assertThat(userNameEmail).isVisible();
-		userNameEmail.click();
-		userNameEmail.fill("Test.User");
         Video video = page.video();
 		page.close();
 		context.close();
-		VideoUtil.saveAs(video, "LoginTest_", ".webm");
+		VideoUtil.saveAs(video, "MyCalender_", ".webm");
 		browser.close();
-		
-
 	}
-	
-	
 }

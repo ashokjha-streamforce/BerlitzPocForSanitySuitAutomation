@@ -18,5 +18,7 @@ public interface IProperty {
 	String  VEDIOLOCATION="VEDIOLOCATION";
 	String PATH = "PATH";
 	String SIGN_OUT = "SIGN_OUT";
+	String LOGIN_AS_USER = "LOGIN_AS_USER";
+	String DOWNLOAD_CALENDAR = "DOWNLOAD_CALENDAR";
 
 }
